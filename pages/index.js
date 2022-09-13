@@ -13,11 +13,14 @@ export default function Home() {
   const [ password, setPassword ] = useState('')
   const [ results, setResults ] = useState([])
   const [ errors, setErrors ] = useState([])
+  const [passed, setPassed] = useState(false)
 
   const submitForm = (e) => {
     e.preventDefault()
 
     let allErrors = []
+
+    setPassed(false)
     setErrors([])
 
     if ( specialCharacters && !password.match( new RegExp(/[ !"#$%&'()*+,-./:;<=>?@[\\\]^_`{|}~]/) ) ) allErrors.push('No special characters found')
@@ -41,12 +44,18 @@ export default function Home() {
 
     }
 
+    if (allErrors.length === 0) setPassed(true)
     setErrors(allErrors)
     
   }
 
+  useEffect(() => {
+    setPassed(false)
+  }, [password, upperCase, lowerCase, numbers, specialCharacters])
+
   const displayResults = () => {
-    if (errors.length === 0) return <p className='text-green-400 text-3xl'>PASSED!</p>
+    if (errors.length === 0 && passed) return <p className='text-green-400 text-3xl'>PASSED!</p>
+  
     return errors.map((error, i) => {
       return <p key={i} className='text-red-400 text-xl'>{ error }</p>
     })
